@@ -11,7 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Wallet, TrendingUp, Send, ExternalLink, ArrowLeft, Activity, Download, Copy, Flame } from 'lucide-react';
+import { Wallet, TrendingUp, Send, ExternalLink, ArrowLeft, Activity, Download, Copy, Flame, Clipboard } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import { useToast } from '@/hooks/use-toast';
@@ -377,6 +377,34 @@ export default function MyAssets() {
     });
   };
 
+  const pasteFromClipboard = async (setFunction: (value: string) => void) => {
+    try {
+      if (!navigator.clipboard) {
+        toast({
+          title: "Not supported",
+          description: "Clipboard access not available. Please paste manually (Ctrl+V)",
+          variant: "destructive",
+        });
+        return;
+      }
+      
+      const text = await navigator.clipboard.readText();
+      if (text) {
+        setFunction(text);
+        toast({
+          title: "Pasted",
+          description: "Wallet address pasted successfully",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Paste manually",
+        description: "Please use Ctrl+V to paste the wallet address",
+        variant: "destructive",
+      });
+    }
+  };
+
   // Redirect if not logged in
   if (loading) {
     return <div className="flex items-center justify-center min-h-screen">Loading...</div>;
@@ -452,44 +480,52 @@ export default function MyAssets() {
               </div>
 
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 lg:grid-cols-2 gap-3 sm:gap-6">
-                {/* Available SOL & Total Value */}
+              <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-4 lg:gap-6">
+                {/* Available */}
                 <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-                    <CardTitle className="text-xs sm:text-sm font-medium">Available / Total Value</CardTitle>
-                    <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4 lg:pt-6">
+                    <CardTitle className="text-xs font-medium">Available</CardTitle>
+                    <Wallet className="h-3 w-3 text-muted-foreground" />
                   </CardHeader>
-                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                    <div className="space-y-1 sm:space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="text-sm sm:text-xl font-bold">SOL: {balance.toFixed(6)}</div>
-                        <div className="text-xs sm:text-sm text-muted-foreground">${solValue.toFixed(2)}</div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="text-xs sm:text-base text-muted-foreground">Total Value:</div>
-                        <div className="text-sm sm:text-xl font-bold">${totalValue.toFixed(2)}</div>
-                      </div>
-                    </div>
+                  <CardContent className="px-2 sm:px-4 lg:px-6 pb-2 sm:pb-4 lg:pb-6">
+                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">{balance.toFixed(6)}</div>
+                    <p className="text-xs text-muted-foreground">SOL</p>
                   </CardContent>
                 </Card>
-                
-                {/* Average Price & Stats */}
+
+                {/* Average Price */}
                 <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2 px-3 sm:px-6 pt-3 sm:pt-6">
-                    <CardTitle className="text-xs sm:text-sm font-medium">Average Price / Assets</CardTitle>
-                    <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4 lg:pt-6">
+                    <CardTitle className="text-xs font-medium">Average Price</CardTitle>
+                    <TrendingUp className="h-3 w-3 text-muted-foreground" />
                   </CardHeader>
-                  <CardContent className="px-3 sm:px-6 pb-3 sm:pb-6">
-                    <div className="space-y-1 sm:space-y-2">
-                      <div className="flex justify-between items-center">
-                        <div className="text-xs sm:text-base text-muted-foreground">Avg Price:</div>
-                        <div className="text-sm sm:text-xl font-bold">${summary?.averagePrice?.toFixed(8) || '0.00000000'}</div>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <div className="text-xs sm:text-base text-muted-foreground">Total Assets:</div>
-                        <div className="text-sm sm:text-lg font-medium">{summary?.totalAssets || 0}</div>
-                      </div>
-                    </div>
+                  <CardContent className="px-2 sm:px-4 lg:px-6 pb-2 sm:pb-4 lg:pb-6">
+                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">${summary?.averagePrice?.toFixed(8) || '0.00000000'}</div>
+                    <p className="text-xs text-muted-foreground">USD</p>
+                  </CardContent>
+                </Card>
+
+                {/* Total Value */}
+                <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4 lg:pt-6">
+                    <CardTitle className="text-xs font-medium">Total Value</CardTitle>
+                    <Activity className="h-3 w-3 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent className="px-2 sm:px-4 lg:px-6 pb-2 sm:pb-4 lg:pb-6">
+                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">${totalValue.toFixed(2)}</div>
+                    <p className="text-xs text-muted-foreground">USD</p>
+                  </CardContent>
+                </Card>
+
+                {/* Assets */}
+                <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
+                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-4 lg:px-6 pt-2 sm:pt-4 lg:pt-6">
+                    <CardTitle className="text-xs font-medium">Assets</CardTitle>
+                    <Download className="h-3 w-3 text-muted-foreground" />
+                  </CardHeader>
+                  <CardContent className="px-2 sm:px-4 lg:px-6 pb-2 sm:pb-4 lg:pb-6">
+                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">{summary?.totalAssets || 0}</div>
+                    <p className="text-xs text-muted-foreground">Total</p>
                   </CardContent>
                 </Card>
               </div>
@@ -753,6 +789,17 @@ export default function MyAssets() {
                     <DialogTitle className="text-center text-base sm:text-lg">Send SOL</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-3 px-1">
+                    {/* Available Balance */}
+                    <div className="bg-muted/30 rounded-lg p-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm text-muted-foreground">Available Balance:</span>
+                        <span className="text-xs sm:text-sm font-medium">{balance.toFixed(6)} SOL</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-muted-foreground">${solValue.toFixed(2)}</span>
+                      </div>
+                    </div>
+
                     <div className="bg-muted/30 rounded-lg p-3">
                       <Label htmlFor="solAmount" className="text-xs sm:text-sm font-medium">Amount (SOL)</Label>
                       <Input
@@ -763,16 +810,74 @@ export default function MyAssets() {
                         onChange={(e) => setSolTransferAmount(e.target.value)}
                         className="mt-1 text-xs sm:text-sm h-9"
                       />
+                      {/* USD Value Display */}
+                      {solTransferAmount && parseFloat(solTransferAmount) > 0 && (
+                        <div className="mt-2 text-right">
+                          <span className="text-xs text-muted-foreground">
+                            ≈ ${(parseFloat(solTransferAmount) * solPrice).toFixed(2)} USD
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Quick Select Percentage Buttons */}
+                      <div className="flex gap-1 mt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setSolTransferAmount((balance * 0.25).toFixed(6))}
+                        >
+                          25%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setSolTransferAmount((balance * 0.5).toFixed(6))}
+                        >
+                          50%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setSolTransferAmount((balance * 0.75).toFixed(6))}
+                        >
+                          75%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setSolTransferAmount((balance * 0.95).toFixed(6))}
+                        >
+                          Max
+                        </Button>
+                      </div>
                     </div>
                     <div className="bg-muted/30 rounded-lg p-3">
                       <Label htmlFor="solReceiver" className="text-xs sm:text-sm font-medium">Receiver Wallet</Label>
-                      <Input
-                        id="solReceiver"
-                        placeholder="Enter receiver wallet address"
-                        value={solReceiverWallet}
-                        onChange={(e) => setSolReceiverWallet(e.target.value)}
-                        className="mt-1 text-xs sm:text-sm h-9 font-mono"
-                      />
+                      <div className="relative mt-1">
+                        <Input
+                          id="solReceiver"
+                          placeholder="Enter receiver wallet address"
+                          value={solReceiverWallet}
+                          onChange={(e) => setSolReceiverWallet(e.target.value)}
+                          className="text-xs sm:text-sm h-9 font-mono pr-10"
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => pasteFromClipboard(setSolReceiverWallet)}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-muted"
+                        >
+                          <Clipboard className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex gap-2 pt-2">
                       <Button 

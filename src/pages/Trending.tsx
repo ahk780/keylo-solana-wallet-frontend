@@ -17,10 +17,10 @@ interface TrendingToken {
   name: string;
   symbol: string;
   logo: string;
-  buy_volume_usd: number;
-  latest_price: number;
-  net_inflow_usd: number;
-  sell_volume_usd: number;
+  buy_volume_usd: number | null;
+  latest_price: number | null;
+  net_inflow_usd: number | null;
+  sell_volume_usd: number | null;
 }
 
 interface TrendingResponse {
@@ -46,22 +46,33 @@ const Trending = () => {
 
   const fetchTrendingTokens = async (hour: number = selectedHour) => {
     try {
+      console.log("Fetching trending tokens...", { hour, token: !!token, user: !!user });
       setIsLoading(true);
       setError(null);
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/api/user/trending?hour=${hour}&limit=20`, {
+      
+      const url = `${import.meta.env.VITE_BACKEND_API_URL}/api/user/trending?hour=${hour}&limit=20`;
+      console.log("API URL:", url);
+      
+      const response = await fetch(url, {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json',
         },
       });
+      
+      console.log("Response status:", response.status, response.ok);
       const data: TrendingResponse = await response.json();
+      console.log("API Response:", data);
       
       if (data.success) {
-        setTokens(data.data);
+        console.log("Setting tokens:", data.data?.length || 0, "tokens");
+        setTokens(data.data || []);
       } else {
-        setError("Failed to fetch trending tokens");
+        console.error("API returned error:", data.message);
+        setError(data.message || "Failed to fetch trending tokens");
       }
     } catch (error) {
+      console.error("Error fetching trending tokens:", error);
       setError("An error occurred while fetching data");
     } finally {
       setIsLoading(false);
@@ -128,7 +139,10 @@ const Trending = () => {
     });
   };
 
-  const formatPrice = (price: number) => {
+  const formatPrice = (price: number | null | undefined) => {
+    if (price === null || price === undefined || isNaN(price)) {
+      return "N/A";
+    }
     if (price >= 1) {
       return price.toFixed(4);
     }
@@ -136,7 +150,10 @@ const Trending = () => {
     return price.toFixed(10).replace(/\.?0+$/, '');
   };
 
-  const formatVolume = (volume: number) => {
+  const formatVolume = (volume: number | null | undefined) => {
+    if (volume === null || volume === undefined || isNaN(volume)) {
+      return "N/A";
+    }
     if (volume >= 1000000) {
       return `$${(volume / 1000000).toFixed(2)}M`;
     } else if (volume >= 1000) {
@@ -266,13 +283,13 @@ const Trending = () => {
                           <div>
                             <p className="text-muted-foreground">Net Flow</p>
                             <div className="flex items-center gap-1">
-                              {token.net_inflow_usd >= 0 ? (
+                              {(token.net_inflow_usd ?? 0) >= 0 ? (
                                 <ArrowUpRight className="h-2 w-2 sm:h-3 sm:w-3 text-green-500" />
                               ) : (
                                 <ArrowDownRight className="h-2 w-2 sm:h-3 sm:w-3 text-red-500" />
                               )}
-                              <span className={`font-medium text-xs sm:text-sm ${token.net_inflow_usd >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                                {formatVolume(Math.abs(token.net_inflow_usd))}
+                              <span className={`font-medium text-xs sm:text-sm ${(token.net_inflow_usd ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                                {formatVolume(Math.abs(token.net_inflow_usd ?? 0))}
                               </span>
                             </div>
                           </div>

@@ -14,7 +14,7 @@ A modern, responsive web application for Solana trading and wallet management. K
 
 1. **Clone the repository**
    ```bash
-   git clone https://github.com/ahk780/keylo-solana-wallet-frontend.git
+   git clone https://github.com/ahk780/keylo.git
    cd keylo
    ```
 
@@ -330,10 +330,10 @@ This project is licensed under the MIT License. See the LICENSE file for details
 
 ## 🔗 Links
 
-- **Repository**: https://github.com/ahk780/keylo-solana-wallet-frontend
-- **Live Demo**: https://keylio.io
-- **Documentation**: https://docs.keylo.io
-- **Support**: https://t.me/ahk782
+- **Repository**: https://github.com/ahk780/keylo
+- **Live Demo**: [Your deployment URL]
+- **Documentation**: [Your docs URL]
+- **Support**: [Your support email]
 
 ---
 

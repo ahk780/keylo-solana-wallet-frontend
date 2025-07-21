@@ -197,29 +197,29 @@ export default function ReclaimRent() {
           <DashboardHeader />
           <main className="flex-1 p-3 sm:p-6">
             <div className="max-w-full mx-auto space-y-3 sm:space-y-6 px-2 sm:px-4">
-              <div className="mb-6">
-                <h1 className="text-xl sm:text-3xl font-bold">Reclaim Rent</h1>
-                <p className="text-sm sm:text-base text-muted-foreground mt-2">
+              <div className="mb-4 sm:mb-6">
+                <h1 className="text-lg sm:text-xl lg:text-3xl font-bold">Reclaim Rent</h1>
+                <p className="text-xs sm:text-sm lg:text-base text-muted-foreground mt-1 sm:mt-2">
                   Close empty token accounts and recover your rent deposits. Each token account holds approximately 0.002 SOL in rent that can be reclaimed.
                 </p>
               </div>
 
-              <div className="grid gap-6">
+              <div className="grid gap-3 sm:gap-6">
         <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <DollarSign className="w-5 h-5" />
+          <CardHeader className="p-4 sm:p-6">
+            <CardTitle className="flex items-center gap-2 text-sm sm:text-base">
+              <DollarSign className="w-4 h-4 sm:w-5 sm:h-5" />
               Rent Recovery Summary
             </CardTitle>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Total rent recoverable from {emptyAccounts.length} empty token accounts
             </CardDescription>
           </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold text-primary">
+          <CardContent className="p-4 sm:p-6">
+            <div className="text-lg sm:text-2xl font-bold text-primary">
               {totalRentRecoverable.toFixed(8)} SOL
             </div>
-            <div className="text-sm text-muted-foreground mt-1">
+            <div className="text-xs sm:text-sm text-muted-foreground mt-1">
               ≈ ${(totalRentRecoverable * 200).toFixed(2)} USD (estimated)
             </div>
           </CardContent>
@@ -227,46 +227,46 @@ export default function ReclaimRent() {
 
         {emptyAccounts.length === 0 ? (
           <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
-              <AlertCircle className="w-12 h-12 text-muted-foreground mb-4" />
-              <h3 className="text-lg font-semibold mb-2">No Empty Accounts Found</h3>
-              <p className="text-muted-foreground text-center">
+            <CardContent className="flex flex-col items-center justify-center py-8 sm:py-12 p-4 sm:p-6">
+              <AlertCircle className="w-8 h-8 sm:w-12 sm:h-12 text-muted-foreground mb-3 sm:mb-4" />
+              <h3 className="text-base sm:text-lg font-semibold mb-2">No Empty Accounts Found</h3>
+              <p className="text-muted-foreground text-center text-sm sm:text-base">
                 You don't have any empty token accounts to reclaim rent from.
               </p>
             </CardContent>
           </Card>
         ) : (
-          <div className="grid gap-4">
+          <div className="grid gap-3 sm:gap-4">
             {emptyAccounts.map((account) => (
               <Card key={account.mint}>
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-4">
+                <CardContent className="p-3 sm:p-6">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-4">
+                    <div className="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
                       <img
                         src={account.logo}
                         alt={account.name}
-                        className="w-12 h-12 rounded-full"
+                        className="w-10 h-10 sm:w-12 sm:h-12 rounded-full flex-shrink-0"
                         onError={(e) => {
                           e.currentTarget.src = "/placeholder.svg";
                         }}
                       />
-                      <div>
-                        <h3 className="font-semibold">{account.name}</h3>
-                        <div className="flex items-center gap-2 mt-1">
-                          <Badge variant="secondary">{account.symbol}</Badge>
-                          <span className="text-xs text-muted-foreground">
-                            {account.mint.slice(0, 8)}...{account.mint.slice(-8)}
+                      <div className="min-w-0 flex-1">
+                        <h3 className="font-semibold text-sm sm:text-base truncate">{account.name}</h3>
+                        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mt-1">
+                          <Badge variant="secondary" className="text-xs w-fit">{account.symbol}</Badge>
+                          <span className="text-xs text-muted-foreground font-mono">
+                            {account.mint.slice(0, 6)}...{account.mint.slice(-6)}
                           </span>
                         </div>
                       </div>
                     </div>
-                    <div className="text-right">
-                      <div className="text-lg font-semibold text-primary">
+                    <div className="flex sm:flex-col items-center sm:items-end justify-between sm:justify-center gap-2 sm:gap-0 sm:text-right">
+                      <div className="text-base sm:text-lg font-semibold text-primary">
                         {account.rent.toFixed(8)} SOL
                       </div>
                       <Button
                         onClick={() => handleClaimRent(account)}
-                        className="mt-2"
+                        className="sm:mt-2"
                         size="sm"
                       >
                         Claim Rent
@@ -286,48 +286,50 @@ export default function ReclaimRent() {
 
       {/* Confirmation Dialog */}
       <Dialog open={confirmDialogOpen} onOpenChange={setConfirmDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Confirm Rent Claim</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="mx-2 sm:mx-auto max-w-sm sm:max-w-lg">
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-base sm:text-lg">Confirm Rent Claim</DialogTitle>
+            <DialogDescription className="text-sm">
               Are you sure you want to close this token account and claim the rent?
             </DialogDescription>
           </DialogHeader>
           {selectedAccount && (
-            <div className="py-4">
-              <div className="flex items-center gap-3 mb-4">
+            <div className="py-3 sm:py-4">
+              <div className="flex items-center gap-3 mb-3 sm:mb-4">
                 <img
                   src={selectedAccount.logo}
                   alt={selectedAccount.name}
-                  className="w-10 h-10 rounded-full"
+                  className="w-8 h-8 sm:w-10 sm:h-10 rounded-full flex-shrink-0"
                   onError={(e) => {
                     e.currentTarget.src = "/placeholder.svg";
                   }}
                 />
-                <div>
-                  <h4 className="font-semibold">{selectedAccount.name}</h4>
-                  <p className="text-sm text-muted-foreground">{selectedAccount.symbol}</p>
+                <div className="min-w-0">
+                  <h4 className="font-semibold text-sm sm:text-base truncate">{selectedAccount.name}</h4>
+                  <p className="text-xs sm:text-sm text-muted-foreground">{selectedAccount.symbol}</p>
                 </div>
               </div>
-              <div className="bg-primary/10 p-4 rounded-lg">
-                <p className="text-sm text-muted-foreground">You will receive:</p>
-                <p className="text-lg font-bold text-primary">
+              <div className="bg-primary/10 p-3 sm:p-4 rounded-lg">
+                <p className="text-xs sm:text-sm text-muted-foreground">You will receive:</p>
+                <p className="text-base sm:text-lg font-bold text-primary">
                   {selectedAccount.rent.toFixed(8)} SOL
                 </p>
               </div>
             </div>
           )}
-          <DialogFooter>
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Button
               variant="outline"
               onClick={() => setConfirmDialogOpen(false)}
               disabled={claimingRent}
+              className="w-full sm:w-auto"
             >
               Cancel
             </Button>
             <Button
               onClick={confirmClaimRent}
               disabled={claimingRent}
+              className="w-full sm:w-auto"
             >
               {claimingRent ? "Processing..." : "Confirm"}
             </Button>
@@ -337,39 +339,39 @@ export default function ReclaimRent() {
 
       {/* Success Dialog */}
       <Dialog open={successDialogOpen} onOpenChange={setSuccessDialogOpen}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Rent Claimed Successfully!</DialogTitle>
-            <DialogDescription>
+        <DialogContent className="mx-2 sm:mx-auto max-w-sm sm:max-w-lg">
+          <DialogHeader className="text-left">
+            <DialogTitle className="text-base sm:text-lg">Rent Claimed Successfully!</DialogTitle>
+            <DialogDescription className="text-sm">
               Your token account has been closed and rent has been recovered.
             </DialogDescription>
           </DialogHeader>
           {closeResponse && (
-            <div className="py-4">
-              <div className="bg-primary/10 p-4 rounded-lg space-y-2">
+            <div className="py-3 sm:py-4">
+              <div className="bg-primary/10 p-3 sm:p-4 rounded-lg space-y-2">
                 <div>
-                  <p className="text-sm text-muted-foreground">Transaction Signature:</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Transaction Signature:</p>
                   <p className="text-xs font-mono break-all">{closeResponse.data.signature}</p>
                 </div>
                 <div>
-                  <p className="text-sm text-muted-foreground">Operation:</p>
+                  <p className="text-xs sm:text-sm text-muted-foreground">Operation:</p>
                   <p className="text-sm font-semibold">{closeResponse.data.operation}</p>
                 </div>
               </div>
             </div>
           )}
-          <DialogFooter className="flex gap-4">
+          <DialogFooter className="flex flex-col sm:flex-row gap-2 sm:gap-4">
             <Button
               variant="outline"
               onClick={() => setSuccessDialogOpen(false)}
-              className="flex-1"
+              className="w-full sm:flex-1"
             >
               Close
             </Button>
             {closeResponse && (
               <Button
                 onClick={() => window.open(getSolscanUrl(closeResponse.data.signature), "_blank")}
-                className="flex-1"
+                className="w-full sm:flex-1"
               >
                 <ExternalLink className="w-4 h-4 mr-2" />
                 View on Solscan

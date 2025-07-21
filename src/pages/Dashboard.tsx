@@ -249,14 +249,14 @@ const Dashboard = () => {
                   </div>
 
                   {/* Portfolio Overview */}
-                  <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid gap-2 sm:gap-3 grid-cols-2 lg:grid-cols-4">
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Portfolio Value</CardTitle>
                         <Wallet className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{formatCurrency(dashboardData.data.portfolio.totalPortfolioValue)}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{formatCurrency(dashboardData.data.portfolio.totalPortfolioValue)}</div>
                         <p className="text-xs text-muted-foreground flex items-center gap-1">
                           {dashboardData.data.portfolio.profitLossPercent >= 0 ? (
                             <TrendingUp className="h-2 w-2 sm:h-3 sm:w-3 text-green-500" />
@@ -269,12 +269,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Total Assets</CardTitle>
                         <Activity className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{dashboardData.data.portfolio.totalAssets}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{dashboardData.data.portfolio.totalAssets}</div>
                         <p className="text-xs text-muted-foreground">
                           {formatCurrency(dashboardData.data.portfolio.totalValue)} in tokens
                         </p>
@@ -282,12 +282,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">SOL Balance</CardTitle>
                         <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{dashboardData.data.portfolio.solBalance.toFixed(4)} SOL</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{dashboardData.data.portfolio.solBalance.toFixed(4)} SOL</div>
                         <p className="text-xs text-muted-foreground">
                           {formatCurrency(dashboardData.data.portfolio.solValueUsd)}
                         </p>
@@ -295,12 +295,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">P&L</CardTitle>
                         <Percent className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className={`text-lg sm:text-xl lg:text-2xl font-bold ${dashboardData.data.portfolio.totalProfitLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className={`text-base sm:text-lg lg:text-2xl font-bold ${dashboardData.data.portfolio.totalProfitLoss >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {formatCurrency(dashboardData.data.portfolio.totalProfitLoss)}
                         </div>
                         <p className="text-xs text-muted-foreground">
@@ -311,14 +311,14 @@ const Dashboard = () => {
                   </div>
 
                   {/* Trading & Orders Stats */}
-                  <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+                  <div className="grid gap-2 sm:gap-3 grid-cols-2 lg:grid-cols-4">
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Total Transactions</CardTitle>
                         <History className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{dashboardData.data.trading.totalTransactions}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{dashboardData.data.trading.totalTransactions}</div>
                         <p className="text-xs text-muted-foreground">
                           {dashboardData.data.trading.successRate}% success rate
                         </p>
@@ -326,12 +326,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Trading Volume</CardTitle>
                         <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                         <div className="text-lg sm:text-xl lg:text-2xl font-bold">{formatCurrency(dashboardData.data.trading.totalVolume)}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                         <div className="text-base sm:text-lg lg:text-2xl font-bold">{formatCurrency(dashboardData.data.trading.totalVolume)}</div>
                          <p className="text-xs text-muted-foreground">
                            Avg: {formatCurrency(dashboardData.data.trading.avgTransactionValue)}
                          </p>
@@ -339,12 +339,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Total Orders</CardTitle>
                         <Target className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{dashboardData.data.orders.totalOrders}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{dashboardData.data.orders.totalOrders}</div>
                         <p className="text-xs text-muted-foreground">
                           {dashboardData.data.orders.waitingOrders} waiting, {dashboardData.data.orders.triggeredOrders} triggered
                         </p>
@@ -352,12 +352,12 @@ const Dashboard = () => {
                     </Card>
 
                     <Card className="bg-card/50 backdrop-blur-sm border-primary/20">
-                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1">
+                      <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-1 px-2 sm:px-6 pt-2 sm:pt-6">
                         <CardTitle className="text-xs sm:text-sm font-medium">Order Value</CardTitle>
                         <DollarSign className="h-3 w-3 sm:h-4 sm:w-4 text-muted-foreground" />
                       </CardHeader>
-                      <CardContent className="pt-1">
-                        <div className="text-lg sm:text-xl lg:text-2xl font-bold">{formatCurrency(dashboardData.data.orders.totalOrderValue)}</div>
+                      <CardContent className="pt-1 px-2 sm:px-6 pb-2 sm:pb-6">
+                        <div className="text-base sm:text-lg lg:text-2xl font-bold">{formatCurrency(dashboardData.data.orders.totalOrderValue)}</div>
                         <p className="text-xs text-muted-foreground">
                           {dashboardData.data.orders.buyOrders} buy, {dashboardData.data.orders.sellOrders} sell
                         </p>

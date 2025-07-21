@@ -71,11 +71,18 @@ export const Navigation = () => {
               <a href="#support" className="text-muted-foreground hover:text-foreground transition-colors">
                 Support
               </a>
-              <div className="flex flex-col space-y-2 pt-4 border-t border-border/20">
-                <Button variant="ghost" className="text-muted-foreground hover:text-foreground" asChild>
+              <div className="flex flex-col space-y-3 pt-4 border-t border-border/20">
+                <Button 
+                  variant="outline" 
+                  className="w-full border-primary/50 text-primary hover:bg-primary/10 hover:border-primary" 
+                  asChild
+                >
                   <Link to="/login">Login</Link>
                 </Button>
-                <Button className="bg-primary text-primary-foreground hover-glow" asChild>
+                <Button 
+                  className="w-full bg-primary text-primary-foreground hover:bg-primary/90 hover-glow" 
+                  asChild
+                >
                   <Link to="/register">Register</Link>
                 </Button>
               </div>

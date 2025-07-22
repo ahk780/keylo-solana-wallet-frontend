@@ -116,7 +116,7 @@ export default function MyAssets() {
   const [burnResult, setBurnResult] = useState<BurnResponse['data'] | null>(null);
   const [isBurning, setIsBurning] = useState(false);
 
-  const { data: assetsData, isLoading, error } = useQuery<AssetsResponse>({
+  const { data: assetsData, isLoading, error, refetch: refetchAssets } = useQuery<AssetsResponse>({
     queryKey: ['assets'],
     queryFn: async () => {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/api/user/assets?page=1&limit=20&status=available`, {
@@ -133,9 +133,10 @@ export default function MyAssets() {
       return response.json();
     },
     enabled: !!token && !!user, // Only run query when user is authenticated
+    refetchInterval: 10000, // Refetch every 10 seconds
   });
 
-  const { data: balanceData } = useQuery<BalanceResponse>({
+  const { data: balanceData, refetch: refetchBalance } = useQuery<BalanceResponse>({
     queryKey: ['balance'],
     queryFn: async () => {
       const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/api/user/balance`, {
@@ -152,6 +153,7 @@ export default function MyAssets() {
       return response.json();
     },
     enabled: !!token && !!user,
+    refetchInterval: 5000, // Refetch every 5 seconds
   });
 
   const { data: solPriceData } = useQuery<SolPriceResponse>({
@@ -230,6 +232,9 @@ export default function MyAssets() {
         setTransferSuccessDialog(true);
         setTransferAmount('');
         setReceiverWallet('');
+        // Refetch assets and balance after successful transfer
+        refetchAssets();
+        refetchBalance();
         toast({
           title: "Success",
           description: result.message,
@@ -289,6 +294,9 @@ export default function MyAssets() {
         setTransferSuccessDialog(true);
         setSolTransferAmount('');
         setSolReceiverWallet('');
+        // Refetch assets and balance after successful transfer
+        refetchAssets();
+        refetchBalance();
         toast({
           title: "Success",
           description: result.message,
@@ -366,6 +374,14 @@ export default function MyAssets() {
       const amount = selectedAsset.balance * percentage / 100;
       // Format to avoid scientific notation and remove trailing zeros
       setBurnAmount(amount.toFixed(20).replace(/\.?0+$/, ''));
+    }
+  };
+
+  const setTransferPercentage = (percentage: number) => {
+    if (selectedAsset) {
+      const amount = selectedAsset.balance * percentage / 100;
+      // Format to avoid scientific notation and remove trailing zeros
+      setTransferAmount(amount.toFixed(20).replace(/\.?0+$/, ''));
     }
   };
 
@@ -488,7 +504,7 @@ export default function MyAssets() {
                     <Wallet className="h-3 w-3 text-muted-foreground" />
                   </CardHeader>
                   <CardContent className="px-2 sm:px-4 lg:px-6 pb-2 sm:pb-4 lg:pb-6">
-                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">{balance.toFixed(6)}</div>
+                    <div className="text-xs sm:text-lg lg:text-2xl font-bold">{balance.toFixed(10).replace(/\.?0+$/, '')}</div>
                     <p className="text-xs text-muted-foreground">SOL</p>
                   </CardContent>
                 </Card>
@@ -741,6 +757,17 @@ export default function MyAssets() {
                     <DialogTitle className="text-center text-base sm:text-lg">Transfer {selectedAsset?.symbol}</DialogTitle>
                   </DialogHeader>
                   <div className="space-y-3 px-1">
+                    {/* Available Balance */}
+                    <div className="bg-muted/30 rounded-lg p-3">
+                      <div className="flex justify-between items-center">
+                        <span className="text-xs sm:text-sm text-muted-foreground">Available Balance:</span>
+                        <span className="text-xs sm:text-sm font-medium">{selectedAsset?.balance.toFixed(10).replace(/\.?0+$/, '') || '0'} {selectedAsset?.symbol}</span>
+                      </div>
+                      <div className="text-right">
+                        <span className="text-xs text-muted-foreground">${selectedAsset?.currentValue.toFixed(2) || '0.00'}</span>
+                      </div>
+                    </div>
+
                     <div className="bg-muted/30 rounded-lg p-3">
                       <Label htmlFor="amount" className="text-xs sm:text-sm font-medium">Amount</Label>
                       <Input
@@ -751,16 +778,74 @@ export default function MyAssets() {
                         onChange={(e) => setTransferAmount(e.target.value)}
                         className="mt-1 text-xs sm:text-sm h-9"
                       />
+                      {/* USD Value Display */}
+                      {transferAmount && parseFloat(transferAmount) > 0 && selectedAsset && (
+                        <div className="mt-2 text-right">
+                          <span className="text-xs text-muted-foreground">
+                            ≈ ${(parseFloat(transferAmount) * selectedAsset.currentPrice).toFixed(2)} USD
+                          </span>
+                        </div>
+                      )}
+                      
+                      {/* Quick Select Percentage Buttons */}
+                      <div className="flex gap-1 mt-2">
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setTransferPercentage(25)}
+                        >
+                          25%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setTransferPercentage(50)}
+                        >
+                          50%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setTransferPercentage(75)}
+                        >
+                          75%
+                        </Button>
+                        <Button
+                          type="button"
+                          variant="outline"
+                          size="sm"
+                          className="flex-1 text-xs h-7"
+                          onClick={() => setTransferPercentage(100)}
+                        >
+                          Max
+                        </Button>
+                      </div>
                     </div>
                     <div className="bg-muted/30 rounded-lg p-3">
                       <Label htmlFor="receiver" className="text-xs sm:text-sm font-medium">Receiver Wallet</Label>
-                      <Input
-                        id="receiver"
-                        placeholder="Enter receiver wallet address"
-                        value={receiverWallet}
-                        onChange={(e) => setReceiverWallet(e.target.value)}
-                        className="mt-1 text-xs sm:text-sm h-9 font-mono"
-                      />
+                      <div className="relative mt-1">
+                        <Input
+                          id="receiver"
+                          placeholder="Enter receiver wallet address"
+                          value={receiverWallet}
+                          onChange={(e) => setReceiverWallet(e.target.value)}
+                          className="text-xs sm:text-sm h-9 font-mono pr-10"
+                        />
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => pasteFromClipboard(setReceiverWallet)}
+                          className="absolute right-1 top-1/2 -translate-y-1/2 h-7 w-7 p-0 hover:bg-muted"
+                        >
+                          <Clipboard className="h-3 w-3" />
+                        </Button>
+                      </div>
                     </div>
                     <div className="flex gap-2 pt-2">
                       <Button 
@@ -793,7 +878,7 @@ export default function MyAssets() {
                     <div className="bg-muted/30 rounded-lg p-3">
                       <div className="flex justify-between items-center">
                         <span className="text-xs sm:text-sm text-muted-foreground">Available Balance:</span>
-                        <span className="text-xs sm:text-sm font-medium">{balance.toFixed(6)} SOL</span>
+                        <span className="text-xs sm:text-sm font-medium">{balance} SOL</span>
                       </div>
                       <div className="text-right">
                         <span className="text-xs text-muted-foreground">${solValue.toFixed(2)}</span>
@@ -853,7 +938,7 @@ export default function MyAssets() {
                           variant="outline"
                           size="sm"
                           className="flex-1 text-xs h-7"
-                          onClick={() => setSolTransferAmount((balance * 0.95).toFixed(6))}
+                          onClick={() => setSolTransferAmount(balance.toString())}
                         >
                           Max
                         </Button>

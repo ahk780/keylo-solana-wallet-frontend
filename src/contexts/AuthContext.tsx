@@ -15,8 +15,8 @@ interface User {
 interface AuthContextType {
   user: User | null;
   token: string | null;
-  login: (email: string, password: string) => Promise<boolean>;
-  register: (name: string, email: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string, otp?: string) => Promise<boolean>;
+  register: (name: string, email: string, password: string, otp?: string) => Promise<boolean>;
   logout: () => void;
   loading: boolean;
 }
@@ -91,14 +91,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (email: string, password: string, otp?: string): Promise<boolean> => {
     try {
+      const requestBody: any = { email, password };
+      if (otp) {
+        requestBody.otp = otp;
+      }
+
       const response = await fetch(`${API_BASE}/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();
@@ -149,14 +154,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const register = async (name: string, email: string, password: string): Promise<boolean> => {
+  const register = async (name: string, email: string, password: string, otp?: string): Promise<boolean> => {
     try {
+      const requestBody: any = { name, email, password };
+      if (otp) {
+        requestBody.otp = otp;
+      }
+
       const response = await fetch(`${API_BASE}/register`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ name, email, password }),
+        body: JSON.stringify(requestBody),
       });
 
       const data = await response.json();

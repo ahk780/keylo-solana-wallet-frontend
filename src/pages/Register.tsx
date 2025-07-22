@@ -1,11 +1,11 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, Navigate } from 'react-router-dom';
 import { useAuth } from '@/contexts/AuthContext';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Eye, EyeOff, Loader2 } from 'lucide-react';
+import { Eye, EyeOff, Loader2, Mail } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 
 const Register = () => {
@@ -13,16 +13,80 @@ const Register = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [otp, setOtp] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isOtpLoading, setIsOtpLoading] = useState(false);
+  const [otpTimer, setOtpTimer] = useState(0);
+  const [otpSent, setOtpSent] = useState(false);
   const { register, user } = useAuth();
   const { toast } = useToast();
+
+  useEffect(() => {
+    if (otpTimer > 0) {
+      const interval = setInterval(() => {
+        setOtpTimer(prev => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [otpTimer]);
 
   // Redirect if already logged in
   if (user) {
     return <Navigate to="/dashboard" replace />;
   }
+
+  const handleGetOtp = async () => {
+    if (!email) {
+      toast({
+        title: "Email Required",
+        description: "Please enter your email first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setIsOtpLoading(true);
+    
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_API_URL}/api/otp/request`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'register',
+          email: email,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        toast({
+          title: "OTP Sent",
+          description: data.message,
+        });
+        setOtpSent(true);
+        setOtpTimer(60);
+      } else {
+        toast({
+          title: "Error",
+          description: data.message,
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to send OTP. Please try again.",
+        variant: "destructive",
+      });
+    }
+    
+    setIsOtpLoading(false);
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,9 +110,19 @@ const Register = () => {
       return;
     }
 
+    if (otpSent && !otp) {
+      toast({
+        title: "OTP Required",
+        description: "Please enter the OTP sent to your email",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsLoading(true);
     
-    const success = await register(name, email, password);
+    // Include OTP in registration if it was sent
+    const success = await register(name, email, password, otpSent ? otp : undefined);
     
     if (success) {
       // Redirect will happen automatically via Navigate component
@@ -88,16 +162,53 @@ const Register = () => {
 
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="bg-background/50"
-              />
+              <div className="relative">
+                <Input
+                  id="email"
+                  type="email"
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  required
+                  className="bg-background/50 pr-24"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  className="absolute right-1 top-1 h-8 px-3 text-xs"
+                  onClick={handleGetOtp}
+                  disabled={isOtpLoading || otpTimer > 0 || !email}
+                >
+                  {isOtpLoading ? (
+                    <Loader2 className="h-3 w-3 animate-spin" />
+                  ) : otpTimer > 0 ? (
+                    `${otpTimer}s`
+                  ) : (
+                    <>
+                      <Mail className="h-3 w-3 mr-1" />
+                      OTP
+                    </>
+                  )}
+                </Button>
+              </div>
             </div>
+
+            {otpSent && (
+              <div className="space-y-2">
+                <Label htmlFor="otp">Registration OTP</Label>
+                <Input
+                  id="otp"
+                  type="text"
+                  placeholder="Enter the OTP sent to your email"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  required
+                  className="bg-background/50"
+                  maxLength={6}
+                />
+              </div>
+            )}
             
             <div className="space-y-2">
               <Label htmlFor="password">Password</Label>

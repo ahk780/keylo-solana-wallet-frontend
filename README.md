@@ -331,9 +331,9 @@ This project is licensed under the MIT License. See the LICENSE file for details
 ## 🔗 Links
 
 - **Repository**: https://github.com/ahk780/keylo
-- **Live Demo**: [Your deployment URL]
-- **Documentation**: [Your docs URL]
-- **Support**: [Your support email]
+- **Live Demo**: https://keylo.io
+- **Documentation**: https://docs.keylo.io
+- **Support**: https://t.me/ahk780
 
 ---
 

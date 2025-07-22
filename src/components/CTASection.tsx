@@ -28,7 +28,7 @@ export const CTASection = () => {
               className="bg-primary text-primary-foreground hover-glow group text-lg px-10 py-6 rounded-full"
               asChild
             >
-              <a href="https://github.com/ahk780/keylo" target="_blank" rel="noopener noreferrer">
+              <a href="https://github.com/ahk780/keylo-solana-wallet" target="_blank" rel="noopener noreferrer">
                 <Github className="mr-2 w-5 h-5" />
                 View on GitHub
                 <ArrowRight className="ml-2 w-5 h-5 group-hover:translate-x-1 transition-transform" />
